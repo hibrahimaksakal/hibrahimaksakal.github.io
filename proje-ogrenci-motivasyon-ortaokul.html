@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soru Bazlı Sınav Analizi - Eğitim Teknolojileri Portfolyom</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === CSS BÖLÜMÜ === */
+        :root {
+            --primary-color: #2E4053;
+            --project-header-color: #093f2e;
+            --accent-color: #e74c3c; /* Canlı Kırmızı */
+            --soft-red: #f8d7da; /* Soluk Kırmızı (Arka plan için) */
+            --dark-soft-red: #dc3545; /* Soluk Kırmızı (Metin/Hover için) */
+            --bg-light: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; background-color: var(--bg-light); color: var(--text-primary); line-height: 1.7; font-size: 16px; }
+        h1, h2, h3, h4 { font-family: 'Inter', sans-serif; font-weight: 600; }
+        nav { background: var(--primary-color); padding: 1rem 5%; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow); }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;         
+            align-items: center;   
+            text-decoration: none;
+        }
+        .logo-icon {
+            height: 35px; 
+            width: 35px;  
+            border-radius: 50%; 
+            margin-right: 0.6rem; 
+            object-fit: cover;  
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: white; text-decoration: none; transition: var(--transition); font-weight: 500; }
+        .nav-links a:hover { color: var(--accent-color); }
+        .mobile-menu-toggle { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        section { padding: 3rem 5%; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--primary-color); position: relative; padding-top: 1rem; }
+        .section-title::after { content: ''; display: block; width: 60px; height: 3px; background: var(--accent-color); margin: 0.5rem auto 0; }
+        .skills-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .skill-tag { background: var(--accent-color); color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; }
+        .scroll-to-top { position: fixed; bottom: 20px; right: 20px; width: 36px; height: 36px; background: var(--primary-color); color: white; border: none; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 1rem; box-shadow: var(--shadow); transition: var(--transition); z-index: 1001; }
+        .scroll-to-top:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); background: #34495e; }
+        .scroll-to-top.show { display: flex; }
+        
+        /* FOOTER - GÜNCELLENDİ */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 5%; /* Sayfa geneliyle uyumlu padding */
+        }
+
+        /* YENİ: Footer içeriğini hizalamak için container */
+        .footer-container {
+            display: flex;
+            justify-content: space-between; /* Öğeleri iki uca yaslar */
+            align-items: center;
+            max-width: 1200px; /* Diğer section'lar ile aynı genişlik */
+            margin: 0 auto;
+            flex-wrap: wrap; /* Mobilde alt alta gelmesi için */
+            gap: 1rem;
+        }
+
+        /* YENİ: Sol taraftaki #freepalestine linki */
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            opacity: 1;
+            color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        /* Güncellendi: Copyright yazısı (eski 'footer p' kuralı) */
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0; /* 'p' etiketinin varsayılan margin'ini sıfırlar */
+            text-align: right; /* Sağ tarafta kalması için */
+        }
+        
+        /* YENİ: Modal Stilleri */
+        .modal-overlay {
+            position: fixed; /* Ekranı kaplar */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Yarı saydam arka plan */
+            z-index: 2000; /* Her şeyin üstünde */
+            display: none; /* Varsayılan olarak gizli */
+            align-items: center;
+            justify-content: center;
+            opacity: 0; /* Animasyon için başlangıç */
+            transition: opacity 0.3s ease;
+        }
+
+        /* YENİ: Modalın aktif (görünür) hali */
+        .modal-overlay.modal-active {
+            display: flex; /* Görünür yapmak için */
+            opacity: 1; /* Animasyonla görünür yap */
+        }
+
+        /* YENİ: Modal içerik kutusu */
+        .modal-content {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            padding: 2.5rem 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px; /* Maksimum genişlik */
+            text-align: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            font-size: 1.1rem;
+            font-weight: 500;
+            
+            /* Şık giriş animasyonu */
+            transform: translateY(-50px);
+            transition: all 0.3s ease;
+        }
+
+        /* YENİ: Modal açılırken içerik kutusunun animasyonu */
+        .modal-overlay.modal-active .modal-content {
+            transform: translateY(0);
+        }
+
+        /* YENİ: Kapatma (X) butonu */
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--primary-color); flex-direction: column; padding: 1rem; }
+            .nav-links.active { display: flex; }
+            .mobile-menu-toggle { display: block; }
+            .section-title { font-size: 1.5rem; }
+            .scroll-to-top { width: 32px; height: 32px; font-size: 0.9rem; bottom: 15px; right: 15px; }
+            
+            /* YENİ: Mobilde footer düzenlemesi */
+            .footer-container {
+                flex-direction: column; /* Öğeleri alt alta sırala */
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .copyright {
+                text-align: center;
+            }
+        }
+        
+        .back-to-projects-btn { display: inline-block; margin-bottom: 2rem; color: var(--primary-color); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-to-projects-btn i { margin-right: 0.5rem; }
+        .back-to-projects-btn:hover { color: var(--accent-color); transform: translateX(-3px); }
+        
+        .proje-aciklama-container { background: var(--card-bg); padding: 2rem 2.5rem; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid #e0e0e0; max-width: 900px; margin: 0 auto 3rem auto; }
+        .proje-aciklama-container h3 { color: var(--accent-color); margin-bottom: 1rem; margin-top: 1.5rem; }
+        .proje-aciklama-container h3:first-of-type { margin-top: 0; }
+        .proje-aciklama-container p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.05rem; line-height: 1.8; }
+        
+        /* === YENİ VE GÜNCELLENMİŞ CSS KURALI BURADA === */
+        .proje-link-container {
+            display: flex; /* Butonları yan yana hizalar */
+            gap: 1rem;     /* Butonlar arasına boşluk bırakır */
+            margin-top: 1.5rem; /* Üstten boşluk */
+            flex-wrap: wrap; /* Küçük ekranlarda alt alta gelmelerini sağlar */
+        }
+
+        .proje-dis-link, .proje-dahili-link {
+            display: inline-flex; /* İçindeki ikon ve metni hizalamak için */
+            align-items: center; /* Dikeyde ortalama */
+            background: var(--accent-color); /* Kırmızı */
+            color: white; 
+            padding: 0.6rem 1.2rem; /* Boyut küçültüldü */
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem; /* Yazı boyutu küçültüldü */
+            transition: var(--transition);
+            white-space: nowrap; /* Metnin tek satırda kalmasını sağlar */
+        }
+        .proje-dis-link:hover {
+            background: #c0392b; /* Koyu Kırmızı */
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            color: white; 
+        }
+        .proje-dis-link i, .proje-dahili-link i {
+            margin-left: 0.5rem;
+        }
+
+        /* Dahili link butonu için soluk kırmızı stil */
+        .proje-dahili-link {
+            background: #e9ecef; /* Çok açık gri (soluk kırmızıya yakın) */
+            color: var(--text-primary); /* Metin rengini ana metin rengi yap */
+            border: 1px solid #ced4da; /* Hafif bir kenarlık ekle */
+        }
+
+        .proje-dahili-link:hover {
+            background: #dee2e6; /* Hover'da biraz daha koyu gri */
+            color: var(--text-primary); /* Hover'da da metin rengi değişmesin */
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .uygulama-cercevesi {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden; 
+        }
+
+        .uygulama-cercevesi iframe {
+            width: 100%;
+            height: 2750px; 
+            border: none;
+            display: block; 
+            transition: height 0.2s ease;
+        }
+
+        #proje-uygulama {
+            padding-top: 0;
+        }
+        #proje-uygulama .section-title {
+            padding-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav id="mainNav">
+        <div class="nav-container">
+            
+            <a href="index.html#home" class="logo">
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh_j7atThyQlUDm1WMVHRYVc4eWHIzH9MwT6evwfHUGmo3GdQ8wtZ8XNYlAtNsww8-s3LWlLnFIe5tPCKa0ofRBEtk1E-6kFAjPbDH0Is1o6gd4qNOW4SdSQ-8JjuORt8zSiwWu14m_VgVjtUsjSqvDGGfi8R8UkPzQzfxiNX_QWZf7-xcajyILF4Y8R6mV=s16000" alt="Logo" class="logo-icon">
+                <span>Eğitim Teknolojileri</span>
+            </a>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html#home">Anasayfa</a></li>
+                <li><a href="index.html#about">Hakkımda</a></li>
+                <li><a href="index.html#projects">Projelerim</a></li>
+                <li><a href="index.html#skills">Çalışma Alanlarım</a></li>
+                <li><a href="index.html#interests">İlgiler</a></li>
+                <li><a href="index.html#academic-studies">Akademik</a></li>
+                <li><a href="index.html#contact">İletişim</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section id="proje-detay">
+         <a href="index.html#projects" class="back-to-projects-btn">
+            <i class="fas fa-arrow-left"></i> Tüm Projelere Dön
+        </a>
+        <h2 class="section-title">Ortaokul Öğrenci Koçluğu <br>Motivasyon Değerlendirme Uygulaması</h2>
+        <div class="proje-aciklama-container">
+            <h3>Proje Hakkında</h3>
+            <p>
+                Bu araç, öğretmenlerin sınav sonuçlarını detaylı bir şekilde analiz etmelerini sağlar. 
+                Sınavı bölümlere ayırabilir, öğrenci puanlarını girebilir ve sınıf ortalaması, 
+                geçme oranı gibi kritik istatistikleri anında görebilirsiniz.
+            </p>
+            
+            <div class="proje-link-container">
+                <a href="https://hibrahimaksakal.github.io/ogrenci-motivasyon-ortaokul" target="_blank" rel="noopener noreferrer" class="proje-dis-link">
+                    Uygulamayı Aç <i class="fas fa-external-link-alt"></i>
+                </a>
+                <a href="#proje-uygulama" class="proje-dahili-link">
+                    Canlı Önizleme Aşağıda <i class="fas fa-arrow-down"></i>
+                </a>
+            </div>
+            </div>
+    </section>
+
+    <section id="proje-uygulama">
+        <h2 class="section-title">Uygulama Önizlemesi</h2>
+        <div class="uygulama-cercevesi">
+            
+            <iframe 
+                src="ogrenci-motivasyon-ortaokul.html" 
+                title="Sınav Analiz Uygulaması Önizlemesi"
+                id="projeIframe">
+            </iframe>
+
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-container">
+            <a href="#" id="palestineLink" class="footer-link">#freepalestine</a>
+            <p class="copyright">&copy; 2024 [AD SOYAD]. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <div id="palestineModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal" aria-label="Kapat">&times;</button>
+            <p>Dünyadaki tüm mazlum ve masumları temsilen Filistin'in yanındayız!</p>
+        </div>
+    </div>
+
+    <button class="scroll-to-top" id="scrollToTop" aria-label="Yukarı çık">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Mobil Menü ve Yukarı Çık Scriptleri
+        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(anchor => {
+            anchor.addEventListener('click', function() {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Proje Detay Sayfası için smooth scroll (dahili link)
+        document.querySelector('.proje-dahili-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                // Navigasyon çubuğu yüksekliğini dikkate alarak kaydır
+                const navHeight = document.getElementById('mainNav').offsetHeight;
+                const offsetPosition = targetElement.offsetTop - navHeight - 20; // 20px ekstra boşluk
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+        
+        // YENİ: Modal Popup Fonksiyonu
+        const palestineLink = document.getElementById('palestineLink');
+        const palestineModal = document.getElementById('palestineModal');
+        const closeModal = document.getElementById('closeModal');
+
+        if (palestineLink && palestineModal && closeModal) {
+            
+            // Linke tıklayınca modalı aç
+            palestineLink.addEventListener('click', function(e) {
+                e.preventDefault(); // Sayfanın başına gitmesini engelle
+                palestineModal.classList.add('modal-active');
+            });
+
+            // Kapatma butonuna tıklayınca modalı kapat
+            closeModal.addEventListener('click', function() {
+                palestineModal.classList.remove('modal-active');
+S_S           });
+
+            // Arka plana (overlay) tıklayınca modalı kapat
+            palestineModal.addEventListener('click', function(e) {
+                // Sadece overlay'e (içerik değil) tıklandıysa kapat
+                if (e.target === palestineModal) {
+                    palestineModal.classList.remove('modal-active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
