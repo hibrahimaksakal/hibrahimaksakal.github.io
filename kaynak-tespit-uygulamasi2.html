@@ -134,7 +134,7 @@ tr:last-child td{border-bottom:0}
 @page{size:A4; margin:8mm}
 @media print{
   body{background:#fff !important; color:#000}
-  header,.steps,.sheet,.actions,.btn{display:none !important}
+  header,.steps,.sheet,.actions,.btn,.visits{display:none !important}
   .wrap{padding:0; max-width:none}
   .results{margin-top:0}
 }
@@ -164,6 +164,12 @@ header h1{text-align:center}
 .sub.intro .about{margin-left:0; flex:none}
 /* Hedef net seçili kutusu: koyu yeşil */
 .chip input[name^="tgt-"]:checked + span{background:#17704a; color:#fff; border-color:#17704a}
+
+/* Ziyaret sayacı */
+.visits{margin-top:44px; text-align:center; padding:16px 14px 14px; border:2px dashed var(--line); border-radius:6px; background:color-mix(in srgb, var(--sheet) 88%, transparent)}
+.visits .lbl{letter-spacing:.14em; font-size:.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase}
+.visits .num{font-family:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; font-size:2.4rem; font-weight:800; line-height:1.1; margin-top:2px}
+.visits .vnote{font-size:.88rem; color:var(--ink-soft); margin:8px auto 0; max-width:46ch}
 
 /* Hakkında */
 .about{font:inherit; font-weight:700; color:var(--ink); background:var(--accent); color:var(--accent-ink); border:2px solid var(--ink); border-radius:999px; padding:4px 14px; margin-left:4px; cursor:pointer; min-height:36px; white-space:nowrap}
@@ -242,7 +248,7 @@ input[type=text]{font-size:16px; min-height:48px}
     <section class="panel" id="p1" aria-labelledby="t1">
       <h2 id="t1">Öğrenci bilgileri</h2>
       <label class="field" for="adsoyad">Ad soyad (isteğe bağlı)
-        <input type="text" id="adsoyad" autocomplete="name" >
+        <input type="text" id="adsoyad" autocomplete="name">
       </label>
       <label class="field" for="lise">Hedeflediğin lise (isteğe bağlı)
         <input type="text" id="lise">
@@ -293,11 +299,17 @@ input[type=text]{font-size:16px; min-height:48px}
       <h2 id="aboutTitle">Hakkında</h2>
       <p>Bu rehber, şimdiki ve hedef netlerine göre LGS 2026-2027 hazırlığında hangi soru bankalarına bakabileceğini göstermek için hazırlandı. Kaynaklar, yayınevi soru kaynağı gruplandırma listesindeki zorluk düzeylerine göre eşleştirilir.</p>
       <p>Listede toplam <b>15 farklı yayınevi</b> yer alıyor: Okyanus, Fenomen, Hız, Ankara, Mozaik, Günay, Nartest, Bilfen, Kafa DenGi, Sinan Kuzucu, Paraf, Newton, Kurmay ELT, YDS Publishing ve Team ELT.</p>
-      <p>Sayfa yenilendiğinde ya da kapatıldığında girdiğin tüm bilgiler ve seçimler kaybolur; hiçbir veri kaydedilmez.</p>
+      <p>Girdiğin ad, lise ve net seçimleri hiçbir yere gönderilmez ve kaydedilmez; sayfayı yenilediğinde ya da kapattığında kaybolur. Sayfa yalnızca <b>anonim toplam ziyaret sayısını</b> tutar. Bunun için çerez kullanmayan, gizlilik odaklı GoatCounter sayaç hizmeti kullanılır; seni tanımlayacak kişisel bilgi toplanmaz.</p>
       <p class="dlg-note">Bu liste <b>yalnızca bilgilendirme amacı taşır</b>. Hiçbir yayınevi ile <b>herhangi bir işbirliği, sponsorluk veya reklam ilişkisi yoktur</b>. Öneriler tavsiye niteliğindedir; kitap seçerken kendi ihtiyacına ve öğretmeninin görüşüne de bak.</p>
       <button type="button" class="btn primary" id="aboutClose">Kapat</button>
     </div>
   </dialog>
+
+  <footer class="visits" id="visits" hidden>
+    <div class="lbl">Toplam ziyaret</div>
+    <div class="num" id="visitNum" aria-live="polite">–</div>
+    <p class="vnote">Ziyaret sayısı anonim olarak sayılır. Girdiğin bilgiler ve seçimlerin kaydedilmez.</p>
+  </footer>
 </div>
 
 <script>
@@ -665,8 +677,19 @@ $("aboutBtn").onclick=()=>dlg.showModal();
 $("aboutClose").onclick=()=>dlg.close();
 dlg.addEventListener("click",e=>{ if(e.target===dlg) dlg.close(); });
 
+/* Toplam ziyaret sayısı (GoatCounter); alınamazsa alan gizli kalır */
+fetch("https://kaynak.goatcounter.com/counter/TOTAL.json")
+  .then(r=>{ if(!r.ok) throw 0; return r.json(); })
+  .then(j=>{
+    const v = j.count_unique!==undefined ? j.count_unique : j.count;
+    if(v===undefined) throw 0;
+    $("visitNum").textContent = v; $("visits").hidden = false;
+  }).catch(()=>{});
+
 renderSubjects();
 goTo(1);
 </script>
+<script data-goatcounter="https://kaynak.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
