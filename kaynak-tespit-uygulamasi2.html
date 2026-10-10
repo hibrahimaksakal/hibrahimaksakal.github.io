@@ -171,6 +171,23 @@ header h1{text-align:center}
 .visits .num{font-family:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; font-size:2.4rem; font-weight:800; line-height:1.1; margin-top:2px}
 .visits .vnote{font-size:.88rem; color:var(--ink-soft); margin:0 auto; max-width:56ch}
 
+.btn.orange{background:#f58a1f; color:#14213d; border-color:#14213d}
+.actions{justify-content:center}
+#adsoyad,#lise{text-transform:uppercase}
+.btn.blue{background:#1d5fd1; color:#fff; border-color:#1d5fd1}
+.btn.blue:hover{box-shadow:3px 3px 0 #0f3a85}
+
+/* Butonlarda beyaz yazı (okunurluk için hafif gölge) */
+#btnList, #btnSet, #btnMoral{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.45)}
+/* 3. adım ders adları: fosforlu kalem efekti */
+.hl-pen{
+  background:linear-gradient(104deg, rgba(255,226,89,0) 0.5%, rgba(255,226,89,.5) 2.5%, rgba(255,226,89,.38) 96%, rgba(255,226,89,0) 99%);
+  padding:.05em .35em; margin:0 -.2em; border-radius:.6em .25em .7em .3em;
+  -webkit-box-decoration-break:clone; box-decoration-break:clone;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hl-pen{background:linear-gradient(104deg, rgba(255,226,89,0) 0.5%, rgba(255,226,89,.26) 2.5%, rgba(255,226,89,.18) 96%, rgba(255,226,89,0) 99%)}}
+:root[data-theme="dark"] .hl-pen{background:linear-gradient(104deg, rgba(255,226,89,0) 0.5%, rgba(255,226,89,.26) 2.5%, rgba(255,226,89,.18) 96%, rgba(255,226,89,0) 99%)}
+
 /* Hakkında */
 .about{font:inherit; font-weight:700; color:var(--ink); background:var(--accent); color:var(--accent-ink); border:2px solid var(--ink); border-radius:999px; padding:4px 14px; margin-left:4px; cursor:pointer; min-height:36px; white-space:nowrap}
 .about:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
@@ -248,7 +265,7 @@ input[type=text]{font-size:16px; min-height:48px}
     <section class="panel" id="p1" aria-labelledby="t1">
       <h2 id="t1">Öğrenci bilgileri</h2>
       <label class="field" for="adsoyad">Ad soyad (isteğe bağlı)
-        <input type="text" id="adsoyad" autocomplete="name" >
+        <input type="text" id="adsoyad" autocomplete="name">
       </label>
       <label class="field" for="lise">Hedeflediğin lise (isteğe bağlı)
         <input type="text" id="lise">
@@ -282,7 +299,8 @@ input[type=text]{font-size:16px; min-height:48px}
       <div class="summary" id="summary"></div>
       <div class="actions">
         <button type="button" class="btn primary big" id="btnList">UYGUN KAYNAKLARI LİSTELE</button>
-        <button type="button" class="btn big" id="btnSet">BANA SET OLUŞTUR</button>
+        <button type="button" class="btn blue big" id="btnSet">BANA SET OLUŞTUR</button>
+        <button type="button" class="btn orange big" id="btnMoral">BANA MORAL VER</button>
       </div>
     </section>
 
@@ -502,7 +520,7 @@ function chipGroup(subj, kind){
 function renderSubjects(){
   $("subjects").innerHTML = SUBJECTS.map(s=>`
     <div class="subject" data-s="${s.id}">
-      <h3>${s.name} <span class="qn">(${s.q} soru)</span></h3>
+      <h3><span class="hl-pen">${s.name}</span> <span class="qn">(${s.q} soru)</span></h3>
       ${chipGroup(s,"cur")}
       ${chipGroup(s,"tgt")}
       ${S.cur[s.id]===undefined?'<p class="hint">Önce şimdiki net aralığını seç; hedef aralığı ondan sonra açılır.</p>':''}
@@ -655,6 +673,55 @@ $("btnSet").onclick=()=>{
     setBox("2. Set · Nihai hedefe ulaşma", "Hedef net aralığına ulaşman için: her dersten, hedef netinin gerektirdiği zorluk düzeyinden kitap.", buildSet("goal", avoid)) +
     `<div class="actions"><button class="btn" onclick="window.print()">Yazdır</button></div>`;
   $("results").innerHTML = out;
+  $("results").scrollIntoView({behavior:"smooth"});
+};
+
+/* 1. adım alanları: yalnızca BÜYÜK HARF (Türkçe kurallarıyla: i→İ, ı→I) */
+["adsoyad","lise"].forEach(id=>{
+  const el=$(id);
+  el.setAttribute("autocapitalize","characters");
+  el.addEventListener("input",e=>{
+    if(e.isComposing) return;
+    const a=el.selectionStart, b=el.selectionEnd, up=el.value.toLocaleUpperCase("tr-TR");
+    if(up!==el.value){ el.value=up; try{ el.setSelectionRange(a,b); }catch(_){} }
+  });
+});
+
+/* ---------- BANA MORAL VER ---------- */
+function moralText(){
+  const R={20:[[0,5],[6,10],[11,15],[16,18],[19,20]],10:[[0,3],[4,6],[7,8],[9,10]]};
+  const rows=SUBJECTS.map(s=>{
+    const c=R[s.q][S.cur[s.id]], t=R[s.q][S.tgt[s.id]];
+    return {s,c,t,lv:S.cur[s.id]/(R[s.q].length-1),gain:(t[0]+t[1])/2-(c[0]+c[1])/2};
+  });
+  const cl=rows.reduce((a,r)=>a+r.c[0],0), ch=rows.reduce((a,r)=>a+r.c[1],0);
+  const tl=rows.reduce((a,r)=>a+r.t[0],0), th=rows.reduce((a,r)=>a+r.t[1],0);
+  const totalGain=(tl+th)/2-(cl+ch)/2;
+  const NEED={3:78,10:68,15:60,20:53}, req=NEED[S.slice];
+  const nm=r=>`<b>${r.s.name}</b> (${r.c[0]}-${r.c[1]} net)`;
+  const P=[];
+  const name=S.ad?esc(S.ad):"";
+  P.push(`Merhaba${name?" "+name:""}! Şu an toplam <b>${cl}-${ch} net</b> aralığındasın ve <b>${tl}-${th} net</b> aralığını hedefliyorsun.` +
+    (totalGain>0.5 ? ` Bu, ortalama olarak yaklaşık <b>${Math.round(totalGain)} net</b> büyümek demek. Tek seferde değil, ders ders ve adım adım ulaşılacak bir yol.`
+                   : ` Hedefin şimdiki seviyeni korumak; istikrar da başlı başına bir başarıdır.`));
+  const strong=[...rows].filter(r=>r.lv>=0.75).sort((a,b)=>b.lv-a.lv).slice(0,2);
+  if(strong.length) P.push(`Güçlü olduğun alanlar: ${strong.map(nm).join(" ve ")}. Buralar sana güven versin; bu derslerdeki düzenli çalışmanı sürdürmen yeterli olur.`);
+  else P.push(`Şimdi düşük görünen netler, doğru ve düzenli çalışmayla genellikle en hızlı yükselen netlerdir. Başlangıç noktan sadece bir başlangıç.`);
+  const grow=[...rows].filter(r=>r.gain>0).sort((a,b)=>b.gain-a.gain||a.lv-b.lv).slice(0,2);
+  if(grow.length) P.push(`En çok büyüme fırsatın: ${grow.map(r=>`<b>${r.s.name}</b> (${r.c[0]}-${r.c[1]} → ${r.t[0]}-${r.t[1]} net)`).join(" ve ")}. İlk haftalarda bu derslere kısa ama düzenli çalışmalar ayırmak güzel bir başlangıç olur.`);
+  if(th<req){
+    P.push(`Dikkat edilecek bir nokta: %${S.slice}'lik dilim için ortalama en az ${req} net gerekiyor, ancak hedef aralığının üst ucu (${th}) bunun altında kalıyor. Hedef aralıklarını biraz yukarı çekmeyi düşünebilirsin. Bunu bir engel değil, hedefini netleştirme fırsatı olarak gör.`);
+  } else {
+    P.push(`Hedef net aralığın, %${S.slice}'lik dilimin gerektirdiği ${req} net seviyesine ulaşıyor; hedefinle planın uyumlu görünüyor.` +
+      (tl<req ? ` Yalnız aralığın alt ucu (${tl}) bu seviyenin altında; hedefini aralığın üst kısmına yaklaştırmaya çalış.` : ""));
+  }
+  const lise=S.lise?` ${esc(S.lise)} hedefin için`:" Hedefin için";
+  P.push(`${lise} atacağın her küçük adım değerli. Bir günde her şeyi değiştirmen gerekmiyor; bugün bir konu, yarın bir konu... Zorlandığın günler de yolun bir parçası. Sen yeter ki devam et, başaracağına inanıyorum. 💪`);
+  P.push(`<span class="why">Bu yorum yalnızca seçtiğin net aralıklarına dayanır; gerçek sonuçlar çalışma düzenine ve sınav gününe bağlıdır.</span>`);
+  return P;
+}
+$("btnMoral").onclick=()=>{
+  $("results").innerHTML = `<div class="setbox"><h2>Sana küçük bir not</h2>${moralText().map(t=>`<p>${t}</p>`).join("")}<div class="actions"><button class="btn" onclick="window.print()">Yazdır</button></div></div>`;
   $("results").scrollIntoView({behavior:"smooth"});
 };
 
