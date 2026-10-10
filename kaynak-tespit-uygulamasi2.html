@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LGS 2026-2027 Hedef ve Kaynak Kitap Rehberi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f7fc; --grid:#d9e3f2; --sheet:#ffffff; --ink:#14213d; --ink-soft:#4a5878;
+  --line:#c9d5e8; --accent:#f2c230; --accent-ink:#14213d; --margin:#d64045; --ok:#1f8a5b;
+  --chip:#ecf1fa; --chip-on:#14213d; --chip-on-ink:#ffffff; --disabled:#9aa6bd;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1626; --grid:#1b2740; --sheet:#172036; --ink:#e8eefb; --ink-soft:#a7b4d0;
+    --line:#2b3a5c; --accent:#f2c230; --accent-ink:#14213d; --margin:#ff6b70; --ok:#4fd39a;
+    --chip:#202c48; --chip-on:#f2c230; --chip-on-ink:#14213d; --disabled:#5d6c8e;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1626; --grid:#1b2740; --sheet:#172036; --ink:#e8eefb; --ink-soft:#a7b4d0;
+  --line:#2b3a5c; --accent:#f2c230; --accent-ink:#14213d; --margin:#ff6b70; --ok:#4fd39a;
+  --chip:#202c48; --chip-on:#f2c230; --chip-on-ink:#14213d; --disabled:#5d6c8e;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink); background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;
+  font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif; font-size:17px; line-height:1.5;
+}
+.wrap{max-width:920px; margin:0 auto; padding:28px 16px 64px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; margin:0; line-height:1.15}
+h1{font-size:clamp(2rem,6vw,3.4rem); font-weight:800; letter-spacing:-.02em}
+.sub{color:var(--ink-soft); max-width:60ch; margin:10px 0 0}
+
+/* the one memorable thing: the notebook sheet with a red margin line */
+.sheet{
+  position:relative; background:var(--sheet); border:2px solid var(--ink); border-radius:6px;
+  padding:26px 22px 26px 56px; margin-top:22px; box-shadow:6px 6px 0 var(--ink);
+}
+.sheet::before{content:""; position:absolute; top:0; bottom:0; left:36px; width:2px; background:var(--margin)}
+
+.steps{display:flex; gap:6px; margin:26px 0 0; padding:0; list-style:none; flex-wrap:wrap}
+.steps li{flex:1 1 140px}
+.steps button{
+  width:100%; text-align:left; font:inherit; font-weight:600; padding:10px 12px; cursor:pointer;
+  background:var(--sheet); color:var(--ink-soft); border:2px solid var(--line); border-radius:6px;
+}
+.steps button[aria-current="step"]{border-color:var(--ink); color:var(--ink); background:var(--accent); color:var(--accent-ink)}
+.steps button.done{color:var(--ink); border-color:var(--ink)}
+.steps small{display:block; font-weight:400; opacity:.85}
+
+label.field{display:block; margin-top:18px; font-weight:600}
+input[type=text]{
+  display:block; width:100%; margin-top:6px; padding:12px 14px; font:inherit; color:var(--ink);
+  background:var(--paper); border:2px solid var(--line); border-radius:6px;
+}
+input[type=text]:focus{outline:3px solid var(--accent); outline-offset:1px; border-color:var(--ink)}
+.hint{color:var(--ink-soft); font-size:.95rem; margin:6px 0 0}
+.err{color:var(--margin); font-weight:600; margin-top:12px; min-height:1.4em}
+
+.slices{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-top:18px}
+.slice input, .chip input{position:absolute; opacity:0; pointer-events:none}
+.slice span{
+  display:block; padding:18px 14px; border:2px solid var(--line); border-radius:6px; cursor:pointer;
+  background:var(--paper); font-weight:600;
+}
+.slice b{display:block; font-family:"Bricolage Grotesque",system-ui,sans-serif; font-size:2.2rem; line-height:1}
+.slice input:checked + span{background:var(--chip-on); color:var(--chip-on-ink); border-color:var(--chip-on)}
+.slice input:focus-visible + span, .chip input:focus-visible + span{outline:3px solid var(--accent); outline-offset:2px}
+
+.subject{padding:16px 0; border-top:2px dashed var(--line)}
+.subject:first-of-type{border-top:0; padding-top:0}
+.subject h3{font-size:1.35rem}
+.subject .qn{color:var(--ink-soft); font-weight:400; font-size:1rem; font-family:"Source Sans 3",system-ui,sans-serif}
+.group{margin-top:10px}
+.group legend, .group .gl{font-weight:600; padding:0; margin-bottom:6px}
+fieldset{border:0; margin:0; padding:0; min-width:0}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip span{
+  display:inline-block; padding:8px 14px; border:2px solid var(--line); border-radius:999px; cursor:pointer;
+  background:var(--chip); font-weight:600; user-select:none;
+}
+.chip input:checked + span{background:var(--chip-on); color:var(--chip-on-ink); border-color:var(--chip-on)}
+.chip input:disabled + span{color:var(--disabled); background:transparent; border-style:dashed; cursor:not-allowed; text-decoration:line-through}
+
+.nav{display:flex; justify-content:space-between; gap:12px; margin-top:26px; flex-wrap:wrap}
+.btn{
+  font:inherit; font-weight:700; padding:13px 22px; border-radius:6px; cursor:pointer;
+  border:2px solid var(--ink); background:var(--sheet); color:var(--ink);
+}
+.btn.primary{background:var(--accent); color:var(--accent-ink)}
+.btn.big{padding:16px 26px; font-size:1.05rem}
+.btn:hover{transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.btn[hidden]{display:none}
+.actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:20px}
+
+.summary{background:var(--paper); border:2px solid var(--line); border-radius:6px; padding:12px 14px; margin-top:6px}
+.summary p{margin:2px 0}
+
+.results{margin-top:30px}
+.results h2{font-size:1.6rem; margin-bottom:6px}
+.res-subj{margin-top:22px}
+.res-subj h3{font-size:1.25rem; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap}
+.res-subj h3 small{font-family:"Source Sans 3",system-ui,sans-serif; font-weight:400; color:var(--ink-soft); font-size:.95rem}
+.tablebox{overflow-x:auto; max-width:100%; margin-top:8px; border:2px solid var(--ink); border-radius:6px; background:var(--sheet)}
+table{border-collapse:collapse; width:100%; min-width:560px}
+th,td{padding:9px 12px; text-align:left; vertical-align:top; border-bottom:1px solid var(--line)}
+th{background:var(--chip); font-weight:700}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block; padding:2px 9px; border-radius:999px; font-size:.85rem; font-weight:700; white-space:nowrap}
+.tag.base{background:var(--chip); border:1px solid var(--line)}
+.tag.push{background:var(--accent); color:var(--accent-ink)}
+.note{color:var(--ink-soft); font-size:.95rem; margin-top:8px}
+.setbox{margin-top:30px; border:2px solid var(--ink); border-radius:6px; padding:16px; background:var(--paper)}
+.setbox h2{margin-bottom:4px}
+.why{color:var(--ink-soft); font-size:.93rem}
+.hl{border-left:4px solid var(--ok); padding-left:10px}
+
+@media (max-width:560px){
+  .sheet{padding:22px 14px 22px 32px; box-shadow:4px 4px 0 var(--ink)}
+  .sheet::before{left:20px}
+}
+@page{size:A4; margin:8mm}
+@media print{
+  body{background:#fff !important; color:#000}
+  header,.steps,.sheet,.actions,.btn{display:none !important}
+  .wrap{padding:0; max-width:none}
+  .results{margin-top:0}
+}
+/* yazdırma: tek sayfaya sığdırma (JS ile pfit sınıfı eklenir) */
+body.pfit{font-size:12px; line-height:1.3}
+body.pfit .wrap{padding:0; max-width:734px; margin:0}
+body.pfit .results h2{font-size:18px; margin:0 0 3px}
+body.pfit .results .sub, body.pfit .legend{font-size:12px; margin:2px 0 0}
+body.pfit .res-subj{margin-top:10px}
+body.pfit .res-subj h3{font-size:14px; gap:6px; break-after:avoid}
+body.pfit .res-subj h3 small{font-size:11.5px}
+body.pfit .tablebox{margin-top:2px; border-width:1px; overflow:visible}
+body.pfit table{min-width:0; font-size:11.5px}
+body.pfit tr{break-inside:avoid}
+body.pfit th, body.pfit td{padding:3px 6px; border-bottom:1px solid #ccc}
+body.pfit .setbox{margin-top:0; padding:8px; border-width:1px}
+body.pfit .setbox h2{font-size:16px}
+body.pfit .setbox + .setbox{margin-top:12px}
+body.pfit .why, body.pfit .note{font-size:11px; margin-top:3px}
+/* Başlık ortalı, alt satır: metin solda, Hakkında sağda */
+header h1{text-align:center}
+/* 3. adım ders isimleri: koyu kırmızı */
+.subject h3{color:#9b1c1c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .subject h3{color:#ff8a8a}}
+:root[data-theme="dark"] .subject h3{color:#ff8a8a}
+.sub.intro{max-width:none; display:flex; align-items:center; justify-content:space-between; gap:12px}
+.sub.intro .about{margin-left:0; flex:none}
+/* Hedef net seçili kutusu: koyu yeşil */
+.chip input[name^="tgt-"]:checked + span{background:#17704a; color:#fff; border-color:#17704a}
+
+/* Hakkında */
+.about{font:inherit; font-weight:700; color:var(--ink); background:var(--accent); color:var(--accent-ink); border:2px solid var(--ink); border-radius:999px; padding:4px 14px; margin-left:4px; cursor:pointer; min-height:36px; white-space:nowrap}
+.about:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+dialog{border:2px solid var(--ink); border-radius:6px; background:var(--sheet); color:var(--ink); padding:0; width:min(560px, calc(100% - 24px)); max-height:calc(100% - 24px); box-shadow:6px 6px 0 var(--ink)}
+dialog::backdrop{background:rgba(10,16,30,.65)}
+.dlg-in{padding:22px 20px; max-height:calc(100vh - 48px); overflow-y:auto}
+.dlg-in h2{font-size:1.5rem; margin-bottom:10px}
+.dlg-in p{margin:0 0 12px}
+.dlg-note{border-left:6px solid var(--margin); padding:8px 12px; background:var(--paper)}
+
+/* Öncelikli (bir üst seviye) satırlar */
+tr.prio td{background:color-mix(in srgb, var(--accent) 24%, var(--sheet)); -webkit-print-color-adjust:exact; print-color-adjust:exact}
+tr.prio td:first-child{box-shadow:inset 5px 0 0 var(--accent)}
+.prio-note{display:inline-block; margin-top:3px; padding:1px 9px; border-radius:999px; background:var(--accent); color:var(--accent-ink); font-size:.8rem; font-weight:700; line-height:1.5}
+.legend{margin:10px 0 0; padding:8px 12px; border:2px dashed var(--line); border-radius:6px}
+.setbox + .setbox{margin-top:18px}
+@media screen and (max-width:640px){ tr.prio{background:color-mix(in srgb, var(--accent) 24%, var(--sheet)); border-left:6px solid var(--accent)} tr.prio td, tr.prio td:first-child{background:transparent; box-shadow:none} }
+
+/* Dokunmatik hedefler */
+.btn{min-height:46px}
+.chip span{min-height:44px; display:inline-flex; align-items:center}
+.steps button{min-height:44px}
+input[type=text]{font-size:16px; min-height:48px}
+
+/* Mobil */
+@media (max-width:560px){
+  body{font-size:16px}
+  .wrap{padding:16px 12px 48px}
+  .steps{gap:6px}
+  .steps li{flex:1 1 calc(50% - 6px)}
+  .steps small{display:none}
+  .chips{gap:6px}
+  .chip span{padding:6px 12px}
+  .slices{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; width:100%}
+  .slice{min-width:0}
+  .slice span{padding:12px 8px; text-align:center; overflow-wrap:anywhere; font-size:.95rem}
+  .slice b{font-size:1.8rem}
+  .nav{gap:10px}
+  .nav .btn{flex:1}
+  .actions .btn{width:100%}
+  .btn.big{padding:14px 16px}
+}
+@media screen and (max-width:640px){
+  table{min-width:0}
+  thead{display:none}
+  .tablebox{border:0; background:transparent; overflow:visible}
+  table, tbody, tr, td{display:block; width:100%}
+  tr{background:var(--sheet); border:2px solid var(--ink); border-radius:6px; margin-bottom:10px; padding:6px 0}
+  td{border:0; padding:3px 12px}
+  td[data-label]::before{content:attr(data-label) ": "; font-weight:700; color:var(--ink-soft)}
+  .hl{border-left:0; padding-left:12px}
+  /* yazdırma ölçümü sırasında tablo düzenini geri getir */
+  body.pfit thead{display:table-header-group}
+  body.pfit table{display:table; width:100%}
+  body.pfit tbody{display:table-row-group}
+  body.pfit tr{display:table-row; border:0; margin:0; padding:0; background:none; border-radius:0}
+  body.pfit td{display:table-cell; width:auto; padding:3px 6px; border-bottom:1px solid #ccc}
+  body.pfit td[data-label]::before{content:none}
+  body.pfit .tablebox{border:1px solid #000}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>LGS 2026-2027<br>Hedef ve Kaynak Kitap Rehberi</h1>
+    <p class="sub intro"><span>Bilgilerini gir, şimdiki ve hedef netlerini seç. Sana uygun soru bankalarını listeleyelim ya da her dersten birer kitapla set oluşturalım.</span> <button type="button" class="about" id="aboutBtn">Hakkında</button></p>
+  </header>
+
+  <ol class="steps" id="steps" aria-label="Adımlar"></ol>
+
+  <main class="sheet">
+    <!-- 1 -->
+    <section class="panel" id="p1" aria-labelledby="t1">
+      <h2 id="t1">Öğrenci bilgileri</h2>
+      <label class="field" for="adsoyad">Ad soyad (isteğe bağlı)
+        <input type="text" id="adsoyad" autocomplete="name" placeholder="Örn. Elif Yılmaz">
+      </label>
+      <label class="field" for="lise">Hedeflediğin lise (isteğe bağlı)
+        <input type="text" id="lise" placeholder="Örn. Ankara Fen Lisesi">
+      </label>
+      <p class="hint">Bu iki alan zorunlu değil. Boş bırakıp “Devam et” ile geçebilirsin.</p>
+      <div class="err" id="e1" role="alert"></div>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel" id="p2" aria-labelledby="t2" hidden>
+      <h2 id="t2">Hedef yüzdelik dilimin</h2>
+      <p class="hint">Hangi dilime girmeyi hedefliyorsun?</p>
+      <fieldset>
+        <legend class="hint" style="position:absolute;left:-9999px">Hedef dilim</legend>
+        <div class="slices" id="slices"></div>
+      </fieldset>
+      <div class="err" id="e2" role="alert"></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel" id="p3" aria-labelledby="t3" hidden>
+      <h2 id="t3">Mevcut durum analizi</h2>
+      <p class="hint">Her ders için şimdiki net aralığını seç, sonra hedef net aralığını seç. Hedefin şimdiki netinden düşük olamaz; düşük aralıklar otomatik kapanır.</p>
+      <div id="subjects"></div>
+      <div class="err" id="e3" role="alert"></div>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel" id="p4" aria-labelledby="t4" hidden>
+      <h2 id="t4">Kaynaklarını bul</h2>
+      <div class="summary" id="summary"></div>
+      <div class="actions">
+        <button type="button" class="btn primary big" id="btnList">UYGUN KAYNAKLARI LİSTELE</button>
+        <button type="button" class="btn big" id="btnSet">BANA SET OLUŞTUR</button>
+      </div>
+    </section>
+
+    <div class="nav">
+      <button type="button" class="btn" id="back" hidden>Geri</button>
+      <button type="button" class="btn primary" id="next">Devam et</button>
+    </div>
+  </main>
+
+  <div class="results" id="results" aria-live="polite"></div>
+
+  <dialog id="aboutDlg" aria-labelledby="aboutTitle">
+    <div class="dlg-in">
+      <h2 id="aboutTitle">Hakkında</h2>
+      <p>Bu rehber, şimdiki ve hedef netlerine göre LGS 2026-2027 hazırlığında hangi soru bankalarına bakabileceğini göstermek için hazırlandı. Kaynaklar, yayınevi soru kaynağı gruplandırma listesindeki zorluk düzeylerine göre eşleştirilir.</p>
+      <p>Listede toplam <b>15 farklı yayınevi</b> yer alıyor: Okyanus, Fenomen, Hız, Ankara, Mozaik, Günay, Nartest, Bilfen, Kafa DenGi, Sinan Kuzucu, Paraf, Newton, Kurmay ELT, YDS Publishing ve Team ELT.</p>
+      <p>Sayfa yenilendiğinde ya da kapatıldığında girdiğin tüm bilgiler ve seçimler kaybolur; hiçbir veri kaydedilmez.</p>
+      <p class="dlg-note">Bu liste <b>yalnızca bilgilendirme amacı taşır</b>. Hiçbir yayınevi ile <b>herhangi bir işbirliği, sponsorluk veya reklam ilişkisi yoktur</b>. Öneriler tavsiye niteliğindedir; kitap seçerken kendi ihtiyacına ve öğretmeninin görüşüne de bak.</p>
+      <button type="button" class="btn primary" id="aboutClose">Kapat</button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+/* ---------- VERİ: LGS 2026-2027 yayınevi soru kaynağı gruplandırması (tüm kaynaklar) ---------- */
+const LV = {"ÇOK KOLAY-KOLAY":1.5,"KOLAY":2,"KOLAY-ORTA":2.5,"ORTA":3,"ORTA-ZOR":3.5,"ZOR":4};
+const BOOKS = {
+ tr:[
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate (BSB) Türkçe Başlangıç Soru Bankası","ÇOK KOLAY-KOLAY"],
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate NYS Türkçe Soru Bankası","ÇOK KOLAY-KOLAY"],
+  ["FENOMEN YAYINLARI","8. Sınıf KÖK Türkçe Soru Bankası","KOLAY"],
+  ["HIZ YAYINLARI","8. Sınıf Hibrit Türkçe Soru Bankası","KOLAY-ORTA"],
+  ["FENOMEN YAYINLARI","8. Sınıf Türkçe A Serisi","KOLAY-ORTA"],
+  ["ANKARA YAYINLARI","8. Sınıf Türkçe Güçlendiren Soru Bankası","KOLAY-ORTA"],
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate Türkçe Soru Bankası","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf Türkçe Soru Bankası","ORTA"],
+  ["MOZAİK YAYINLARI","8. Sınıf Türkçe Soru Bankası","ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Türkçe Zoom Soru Bankası","ORTA"],
+  ["NARTEST YAYINLARI","8. Sınıf Türkçe Prestij Soru Bankası","ORTA-ZOR"],
+  ["BİLFEN YAYINCILIK","8. Sınıf Türkçe Probil Soru Bankası","ORTA-ZOR"],
+  ["FENOMEN YAYINLARI","8. Sınıf Türkçe B Serisi","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Türkçe Altın Sorular Soru Bankası","ORTA-ZOR"],
+  ["KAFA DENGİ YAYINLARI","8. Sınıf Türkçe Challenger Soru Bankası","ZOR"],
+  ["SİNAN KUZUCU YAYINLARI","8. Sınıf Türkçe Soru Bankası – MEB Böyle Sorar","ZOR"],
+  ["OKYANUS YAYINLARI","8. Sınıf Türkçe Master Soru Bankası","ZOR"],
+  ["PARAF YAYINLARI","8. Sınıf Türkçe Mor Soru Bankası","ZOR"]
+ ],
+ mat:[
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate (BSB) Matematik Başlangıç Soru Bankası","ÇOK KOLAY-KOLAY"],
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate NYS Matematik Soru Bankası","ÇOK KOLAY-KOLAY"],
+  ["FENOMEN YAYINLARI","8. Sınıf KÖK Matematik Soru Bankası","KOLAY"],
+  ["HIZ YAYINLARI","8. Sınıf Hibrit Matematik Soru Bankası","KOLAY-ORTA"],
+  ["FENOMEN YAYINLARI","8. Sınıf Matematik A Serisi","KOLAY-ORTA"],
+  ["ANKARA YAYINLARI","8. Sınıf Matematik Güçlendiren Soru Bankası","KOLAY-ORTA"],
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate Matematik Soru Bankası","KOLAY-ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Bumerang Etkinlikli Matematik","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf Matematik Soru Bankası","ORTA"],
+  ["BİLFEN YAYINCILIK","8. Sınıf ProTest Matematik Soru Bankası","ORTA"],
+  ["OKYANUS YAYINLARI","8. Sınıf Pre Master Matematik Soru Bankası","ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Zoom Matematik Soru Bankası","ORTA"],
+  ["MOZAİK YAYINLARI","8. Sınıf Matematik Soru Bankası","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Prestij Matematik Soru Hazinesi","ORTA-ZOR"],
+  ["FENOMEN YAYINLARI","8. Sınıf Matematik B Serisi","ORTA-ZOR"],
+  ["BİLFEN YAYINCILIK","8. Sınıf ProBil Matematik Soru Bankası","ORTA-ZOR"],
+  ["KAFA DENGİ YAYINLARI","8. Sınıf Matematik Challenger","ORTA-ZOR"],
+  ["SİNAN KUZUCU YAYINLARI","8. Sınıf Matematik MEB Böyle Sorar","ORTA-ZOR"],
+  ["PARAF YAYINLARI","8. Sınıf Matematik Mor Soru Bankası","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Altın Sorular Matematik","ZOR"],
+  ["OKYANUS YAYINLARI","8. Sınıf Master Matematik Soru Bankası","ZOR"],
+  ["NEWTON YAYINLARI","8. Sınıf All Star Matematik Soru Bankası","ZOR"],
+  ["SİNAN KUZUCU YAYINLARI","LGS Bi Tık Zor Matematik Soru Bankası","ZOR"]
+ ],
+ fen:[
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate (BSB) Fen Bilimleri Başlangıç Soru Bankası","ÇOK KOLAY-KOLAY"],
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate NYS Fen Bilimleri Soru Bankası","ÇOK KOLAY-KOLAY"],
+  ["FENOMEN YAYINLARI","8. Sınıf KÖK Fen Bilimleri Soru Bankası","KOLAY"],
+  ["HIZ YAYINLARI","8. Sınıf Hibrit Fen Bilimleri Soru Bankası","KOLAY-ORTA"],
+  ["FENOMEN YAYINLARI","8. Sınıf Fen Bilimleri A Serisi","KOLAY-ORTA"],
+  ["ANKARA YAYINLARI","8. Sınıf Fen Bilimleri Güçlendiren Soru Bankası","KOLAY-ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Fen Bilimleri Bumerang Soru Bankası","KOLAY-ORTA"],
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate Fen Bilimleri Soru Bankası","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf Fen Bilimleri Soru Bankası","ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Fen Bilimleri Zoom Soru Bankası","ORTA"],
+  ["NARTEST YAYINLARI","8. Sınıf Fen Bilimleri Prestij Soru Bankası","ORTA-ZOR"],
+  ["MOZAİK YAYINLARI","8. Sınıf Fen Bilimleri Soru Bankası","ORTA-ZOR"],
+  ["BİLFEN YAYINCILIK","8. Sınıf Fen Bilimleri Probil Soru Bankası","ORTA-ZOR"],
+  ["FENOMEN YAYINLARI","8. Sınıf Fen Bilimleri B Serisi","ORTA-ZOR"],
+  ["KAFA DENGİ YAYINLARI","8. Sınıf Fen Bilimleri Challenger Soru Bankası","ORTA-ZOR"],
+  ["SİNAN KUZUCU YAYINLARI","8. Sınıf Fen Bilimleri Soru Bankası – MEB Böyle Sorar","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Fen Bilimleri Altın Sorular Soru Bankası","ZOR"],
+  ["OKYANUS YAYINLARI","8. Sınıf Fen Bilimleri Master Soru Bankası","ZOR"],
+  ["NEWTON YAYINLARI","8. Sınıf All Star Fen Bilimleri Soru Bankası","ZOR"]
+ ],
+ ink:[
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate T.C. İnkılap Tarihi Soru Bankası","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf Hibrit İnkılap Tarihi Soru Bankası","KOLAY-ORTA"],
+  ["ANKARA YAYINLARI","8. Sınıf Güçlendiren İnkılap Tarihi Soru Bankası","KOLAY-ORTA"],
+  ["NEWTON YAYINLARI","8. Sınıf Adım Adım Zirveye İnkılap Tarihi Soru Bankası","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf İnkılap Tarihi Soru Bankası","ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Zoom İnkılap Tarihi Soru Bankası","ORTA"],
+  ["NARTEST YAYINLARI","8. Sınıf Mavi Seri İnkılap Tarihi Soru Bankası","ORTA"],
+  ["BİLFEN YAYINCILIK","8. Sınıf Biltest İnkılap Tarihi Soru Bankası","ORTA"],
+  ["MOZAİK YAYINLARI","8. Sınıf İnkılap Tarihi Soru Bankası","ORTA-ZOR"],
+  ["PARAF YAYINLARI","8. Sınıf İnkılap Tarihi İnteraktif Soru Kütüphanesi","ORTA-ZOR"],
+  ["FENOMEN YAYINLARI","8. Sınıf Fenomen İnkılap Tarihi Soru Bankası","ORTA-ZOR"],
+  ["BİLFEN YAYINCILIK","8. Sınıf ProTest İnkılap Tarihi Soru Bankası","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf İnkılap Tarihi Prestij Soru Bankası","ORTA-ZOR"],
+  ["KAFA DENGİ YAYINLARI","8. Sınıf Challenger İnkılap Tarihi Soru Bankası","ORTA-ZOR"],
+  ["SİNAN KUZUCU YAYINLARI","8. Sınıf İnkılap Tarihi MEB Böyle Sorar Soru Bankası","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Altın Sorular İnkılap Tarihi Soru Bankası","ZOR"],
+  ["NEWTON YAYINLARI","8. Sınıf All Star İnkılap Tarihi Soru Bankası","ZOR"],
+  ["OKYANUS YAYINLARI","8. Sınıf Master İnkılap Tarihi Soru Bankası","ZOR"]
+ ],
+ din:[
+  ["OKYANUS YAYINLARI","8. Sınıf Classmate Din Kültürü Soru Bankası","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf Hibrit Din Kültürü Soru Bankası","KOLAY-ORTA"],
+  ["ANKARA YAYINLARI","8. Sınıf Güçlendiren Din Kültürü Soru Bankası","KOLAY-ORTA"],
+  ["NEWTON YAYINLARI","8. Sınıf Adım Adım Zirveye Din Kültürü Soru Bankası","KOLAY-ORTA"],
+  ["BİLFEN YAYINCILIK","8. Sınıf Biltest Din Kültürü Soru Bankası","ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf Din Kültürü Soru Bankası","ORTA"],
+  ["GÜNAY YAYINLARI","8. Sınıf Zoom Din Kültürü Soru Bankası","ORTA"],
+  ["NARTEST YAYINLARI","8. Sınıf Mavi Seri Din Kültürü Soru Bankası","ORTA"],
+  ["MOZAİK YAYINLARI","8. Sınıf Din Kültürü Soru Bankası","ORTA-ZOR"],
+  ["PARAF YAYINLARI","8. Sınıf Din Kültürü Soru Bankası","ORTA-ZOR"],
+  ["FENOMEN YAYINLARI","8. Sınıf Fenomen Din Kültürü Soru Bankası","ORTA-ZOR"],
+  ["BİLFEN YAYINCILIK","8. Sınıf ProTest Din Kültürü Soru Bankası","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Prestij Din Kültürü Soru Bankası","ORTA-ZOR"],
+  ["KAFA DENGİ YAYINLARI","8. Sınıf Challenger Din Kültürü Soru Bankası","ORTA-ZOR"],
+  ["SİNAN KUZUCU YAYINLARI","8. Sınıf Din Kültürü MEB Böyle Sorar Soru Bankası","ORTA-ZOR"],
+  ["NARTEST YAYINLARI","8. Sınıf Altın Sorular Din Kültürü Soru Bankası","ZOR"],
+  ["NEWTON YAYINLARI","8. Sınıf All Star Din Kültürü Soru Bankası","ZOR"],
+  ["OKYANUS YAYINLARI","8. Sınıf Master Din Kültürü Soru Bankası","ZOR"]
+ ],
+ ing:[
+  ["KURMAY ELT","More & More Star Words Power (Kelime Çalışmaları)","KOLAY-ORTA"],
+  ["YDS PUBLISHING","Shall We?! 8 Key Words (Kelime Çalışmaları)","KOLAY-ORTA"],
+  ["HIZ YAYINLARI","Tıkır Tıkır İngilizce Soru Bankası","KOLAY-ORTA"],
+  ["ANKARA YAYINLARI","8. Sınıf İngilizce Güçlendiren Soru Bankası","KOLAY-ORTA"],
+  ["FENOMEN YAYINLARI","8. Sınıf İngilizce Soru Bankası","ORTA"],
+  ["HIZ YAYINLARI","8. Sınıf İngilizce Soru Bankası","ORTA"],
+  ["KURMAY ELT","More & More Fame The Best English Test Book","ORTA"],
+  ["YDS PUBLISHING","Shall We?! 8 Test Book","ORTA-ZOR"],
+  ["TEAM ELT","Ahead with English 8 Test Book","ORTA"],
+  ["YDS PUBLISHING","English Up 8 Extreme Test Book","ORTA-ZOR"]
+ ]
+};
+
+const SUBJECTS = [
+  {id:"tr",  name:"Türkçe",             loc:"Türkçede",            q:20},
+  {id:"mat", name:"Matematik",          loc:"Matematikte",         q:20},
+  {id:"fen", name:"Fen Bilimleri",      loc:"Fen Bilimlerinde",    q:20},
+  {id:"ink", name:"T.C. İnkılap Tarihi ve Atatürkçülük", loc:"İnkılap Tarihinde", q:10},
+  {id:"din", name:"Din Kültürü ve Ahlak Bilgisi",        loc:"Din Kültüründe",    q:10},
+  {id:"ing", name:"İngilizce",          loc:"İngilizcede",         q:10}
+];
+const BANDS = {
+  20:["0-5 net","6-10 net","11-15 net","16-18 net","19-20 net"],
+  10:["0-3 net","4-6 net","7-8 net","9-10 net"]
+};
+/* Bant başına uygun zorluk aralığı (1.5 = çok kolay-kolay ... 4 = zor) */
+const DIFF = {
+  20:[[1.5,2],[2,2.5],[2.5,3],[3,3.5],[3.5,4]],
+  10:[[2.5,2.5],[2.5,3],[3,3.5],[3.5,4]]
+};
+const SLICES = [
+  {v:3,  t:"%3'lük dilimi hedefliyorum",  bump:.25},
+  {v:10, t:"%10'luk dilimi hedefliyorum", bump:.15},
+  {v:15, t:"%15'lik dilimi hedefliyorum", bump:.05},
+  {v:20, t:"%20'lik dilimi hedefliyorum", bump:0}
+];
+const LVNAME = d => ({1.5:"Çok kolay-kolay",2:"Kolay",2.5:"Kolay-orta",3:"Orta",3.5:"Orta-zor",4:"Zor"})[d];
+
+/* ---------- DURUM ---------- */
+const S = {step:1, ad:"", lise:"", slice:null, cur:{}, tgt:{}};
+const $ = id => document.getElementById(id);
+const STEP_NAMES = [["Bilgiler","Ad ve lise"],["Hedef","Yüzdelik dilim"],["Durum","Şimdiki ve hedef net"],["Kaynaklar","Liste ve set"]];
+
+function renderSteps(){
+  $("steps").innerHTML = STEP_NAMES.map((n,i)=>{
+    const k=i+1, cls = k<S.step?"done":"";
+    return `<li><button type="button" class="${cls}" data-go="${k}" ${k===S.step?'aria-current="step"':''}>${k}. ${n[0]}<small>${n[1]}</small></button></li>`;
+  }).join("");
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.go; if(k<S.step) goTo(k); else if(k>S.step && validateUpTo(k-1)) goTo(k);
+  });
+}
+
+function goTo(k){
+  S.step=k;
+  [1,2,3,4].forEach(i=>$("p"+i).hidden = i!==k);
+  $("back").hidden = k===1;
+  $("next").hidden = k===4;
+  if(k===4) renderSummary();
+  renderSteps();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- ADIM 2 ---------- */
+$("slices").innerHTML = SLICES.map(s=>`<label class="slice"><input type="radio" name="slice" value="${s.v}"><span><b>%${s.v}</b>${s.t}</span></label>`).join("");
+document.querySelectorAll('input[name="slice"]').forEach(r=>r.onchange=()=>{S.slice=+r.value; $("e2").textContent="";});
+
+/* ---------- ADIM 3 ---------- */
+function chipGroup(subj, kind){
+  const bands = BANDS[subj.q], sel = S[kind][subj.id];
+  const label = kind==="cur" ? `${subj.loc} şimdiki net aralığım` : `${subj.loc} hedef net aralığım`;
+  const curSel = S.cur[subj.id];
+  return `<fieldset class="group"><legend>${label}</legend><div class="chips">` +
+    bands.map((b,i)=>{
+      const dis = kind==="tgt" && (curSel===undefined || i<curSel);
+      return `<label class="chip"><input type="radio" name="${kind}-${subj.id}" value="${i}" ${sel===i?"checked":""} ${dis?"disabled":""}><span>${b}</span></label>`;
+    }).join("") + `</div></fieldset>`;
+}
+function renderSubjects(){
+  $("subjects").innerHTML = SUBJECTS.map(s=>`
+    <div class="subject" data-s="${s.id}">
+      <h3>${s.name} <span class="qn">(${s.q} soru)</span></h3>
+      ${chipGroup(s,"cur")}
+      ${chipGroup(s,"tgt")}
+      ${S.cur[s.id]===undefined?'<p class="hint">Önce şimdiki net aralığını seç; hedef aralığı ondan sonra açılır.</p>':''}
+    </div>`).join("");
+  document.querySelectorAll("#subjects input").forEach(inp=>inp.onchange=()=>{
+    const [kind,id]=inp.name.split("-"), v=+inp.value;
+    S[kind][id]=v;
+    if(kind==="cur" && S.tgt[id]!==undefined && S.tgt[id]<v) delete S.tgt[id]; // mantıksız hedefi sıfırla
+    $("e3").textContent="";
+    const y=window.scrollY; renderSubjects(); window.scrollTo(0,y);
+    const el=document.querySelector(`input[name="${inp.name}"][value="${v}"]`); if(el) el.focus({preventScroll:true});
+  });
+}
+
+/* ---------- DOĞRULAMA ---------- */
+function validate(k){
+  if(k===1){
+    S.ad=$("adsoyad").value.trim(); S.lise=$("lise").value.trim(); $("e1").textContent=""; return true;
+  }
+  if(k===2){
+    if(S.slice===null){ $("e2").textContent="Bir hedef dilim seç."; return false; }
+    $("e2").textContent=""; return true;
+  }
+  if(k===3){
+    const miss = SUBJECTS.filter(s=>S.cur[s.id]===undefined || S.tgt[s.id]===undefined).map(s=>s.name);
+    if(miss.length){ $("e3").textContent="Şu derslerde seçim eksik: "+miss.join(", ")+"."; return false; }
+    $("e3").textContent=""; return true;
+  }
+  return true;
+}
+function validateUpTo(n){ for(let i=1;i<=n;i++){ if(!validate(i)){ if(i!==S.step) goTo(i); return false; } } return true; }
+
+$("next").onclick=()=>{ if(validate(S.step)) goTo(S.step+1); };
+$("back").onclick=()=>goTo(S.step-1);
+
+/* ---------- ÖZET ---------- */
+function renderSummary(){
+  const sl = SLICES.find(s=>s.v===S.slice);
+  $("summary").innerHTML =
+    `<p>${S.ad ? "Öğrenci: <b>"+esc(S.ad)+"</b>" : "<b>Öğrenci adı-soyadı belirtilmedi</b>"}</p>
+     <p>${S.lise ? "Hedef lise: <b>"+esc(S.lise)+"</b>" : "<b>Hedef lise belirtilmedi</b>"}</p>
+     <p>Hedef: <b>%${S.slice}'lik dilim</b></p>` +
+    SUBJECTS.map(s=>`<p>${s.name}: ${BANDS[s.q][S.cur[s.id]]} → <b>${BANDS[s.q][S.tgt[s.id]]}</b></p>`).join("") +
+    totalLines();
+}
+function totalLines(){
+  const R = {20:[[0,5],[6,10],[11,15],[16,18],[19,20]], 10:[[0,3],[4,6],[7,8],[9,10]]};
+  let cl=0, ch=0, tl=0, th=0;
+  SUBJECTS.forEach(s=>{
+    const c=R[s.q][S.cur[s.id]], t=R[s.q][S.tgt[s.id]];
+    cl+=c[0]; ch+=c[1]; tl+=t[0]; th+=t[1];
+  });
+  return `<p style="margin-top:10px;padding-top:8px;border-top:2px dashed var(--line)">Mevcut toplam net aralığı: <b>${cl}-${ch} net</b></p>
+          <p>Hedef toplam net aralığı: <b>${tl}-${th} net</b></p>` + fitCheck(tl, th);
+}
+function fitCheck(tl, th){
+  const NEED = {3:78, 10:68, 15:60, 20:53};
+  const req = NEED[S.slice];
+  if(th < req){
+    return `<p style="margin-top:10px;padding:10px 12px;border:2px solid var(--margin);border-left-width:6px;border-radius:6px;color:var(--margin);font-weight:600">
+      Uyumsuzluk var: %${S.slice}'lık dilim için ortalama en az ${req} net gerekiyor, ancak hedef toplam net aralığının (${tl}-${th} net) en üst değeri bile bu sayıya ulaşmıyor. Ya hedef net aralıklarını yükseltmeli ya da hedef dilimini gözden geçirmelisin.</p>`;
+  }
+  const low = tl < req ? ` Aralığın alt ucu (${tl}) bu sayının altında kaldığı için hedefini aralığın üst kısmına yaklaştırman gerekir.` : "";
+  return `<p style="margin-top:10px;padding:10px 12px;border:2px solid var(--ok);border-left-width:6px;border-radius:6px;font-weight:600">
+    Uyumlu: %${S.slice}'lık dilim için ortalama en az ${req} net gerekiyor; hedef toplam net aralığın (${tl}-${th} net) bu sayıya ulaşıyor.${low}</p>`;
+}
+function esc(t){ return t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- EŞLEŞTİRME MANTIĞI ---------- */
+function windowFor(s){
+  const cr = DIFF[s.q][S.cur[s.id]], tr = DIFF[s.q][S.tgt[s.id]];
+  const lo = cr[0];
+  // hedef netin zorluk sınırına kadar; %3 hedefinde bir kademe daha yukarı (zor kitaplar dahil)
+  const hi = Math.min(4, tr[1] + (S.slice===3 ? 0.5 : 0));
+  return {lo, hi, cr, tr};
+}
+function matches(s){
+  const w = windowFor(s);
+  const list = BOOKS[s.id].map(b=>({pub:b[0],title:b[1],lvl:b[2],d:LV[b[2]]}))
+    .filter(b=>b.d>=w.lo && b.d<=w.hi);
+  return {w, list};
+}
+
+/* ---------- LİSTELE ---------- */
+const isPrio = (b,w) => Math.abs(b.d-(w.cr[1]+0.5))<1e-9;
+$("btnList").onclick=()=>{
+  let out = `<h2>Sana uygun kaynaklar</h2>
+    <p class="sub">${S.ad ? esc(S.ad)+" için, ş" : "Ş"}imdiki netlerinden hedeflerine uzanan zorluk aralığındaki tüm kitaplar.</p>
+    <p class="legend"><span class="prio-note">▲ Öncelik</span> etiketli ve renkli satırlar, şimdiki seviyenin <b>bir üstündeki</b> kitaplardır. Gelişmek için önce bunlara yönelmeni öneririz.</p>`;
+  SUBJECTS.forEach(s=>{
+    const {w,list} = matches(s);
+    list.sort((a,b)=> (isPrio(b,w)-isPrio(a,w)) || a.d-b.d);
+    const np = list.filter(b=>isPrio(b,w)).length;
+    out += `<div class="res-subj"><h3>${s.name} <small>${BANDS[s.q][S.cur[s.id]]} → ${BANDS[s.q][S.tgt[s.id]]} · ${list.length} kaynak${np?` · ${np} öncelikli`:""}</small></h3>
+      <div class="tablebox"><table><thead><tr><th>Yayınevi</th><th>Kitap</th><th>Zorluk</th></tr></thead><tbody>` +
+      list.map(b=>{
+        const p = isPrio(b,w);
+        return `<tr class="${p?"prio":""}"><td data-label="Yayınevi">${b.pub}</td><td data-label="Kitap"><b>${b.title}</b>${p?`<br><span class="prio-note">▲ Öncelik: seviyenin bir üstü</span>`:""}</td><td data-label="Zorluk">${b.lvl}</td></tr>`;
+      }).join("") + `</tbody></table></div>` +
+      (np?"":`<p class="note">Bu derste bir üst seviye kitap işaretlenmedi: hedefin şimdiki aralığınla aynı ya da zaten en üst seviyedesin.</p>`) + `</div>`;
+  });
+  $("results").innerHTML = out + `<div class="actions"><button class="btn" onclick="window.print()">Yazdır</button></div>`;
+  $("results").scrollIntoView({behavior:"smooth"});
+};
+
+/* ---------- SET OLUŞTUR (iki set) ---------- */
+function buildSet(kind, avoid){
+  const used = {};
+  return SUBJECTS.map(s=>{
+    const {w,list} = matches(s);
+    const raw = kind==="up" ? w.cr[1]+0.5 : w.hi;
+    const desired = (kind==="up" && raw>w.hi) ? w.lo : Math.max(w.lo, Math.min(w.hi, raw));
+    list.sort((a,b)=>{
+      const sa = Math.abs(a.d-desired)+0.05*(used[a.pub]||0);
+      const sb = Math.abs(b.d-desired)+0.05*(used[b.pub]||0);
+      return sa-sb || a.d-b.d;
+    });
+    let pool = list;
+    if(avoid && avoid[s.id] && list.length>1) pool = list.filter(x=>!(x.title===avoid[s.id].title && x.pub===avoid[s.id].pub));
+    const b = pool[0];
+    used[b.pub]=(used[b.pub]||0)+1;
+    let why;
+    if(kind==="up"){
+      if(raw>w.hi) why = w.cr[1]>=4
+        ? "Zaten en üst zorluk seviyesine yakınsın; önce bu kitapla seviyeni pekiştirip 2. sette hedef kitaba geçersin."
+        : "Bir üst seviye kitap listede yok; önce seviyeni pekiştirmen için aralığın başındaki zorluktan seçildi.";
+      else why = "Şimdiki seviyenin bir üstünde; bir kademe yukarı çıkman için seçildi.";
+    } else {
+      why = b.d>w.cr[1]
+        ? "Hedef netinin gerektirdiği zorluk düzeyinde; nihai hedefe hazırlanman için seçildi."
+        : "Hedef net aralığın şimdiki seviyenle aynı düzeyde olduğundan bu seviyede pekiştirmen için seçildi.";
+    }
+    return {s,b,why};
+  });
+}
+function setBox(title, desc, picks){
+  return `<div class="setbox"><h2>${title}</h2><p class="why">${desc}</p>
+    <div class="tablebox"><table><thead><tr><th>Ders</th><th>Kitap</th><th>Neden bu kitap?</th></tr></thead><tbody>` +
+    picks.map(p=>`<tr><td data-label="Ders"><b>${p.s.name}</b><br><span class="why">${BANDS[p.s.q][S.cur[p.s.id]]} → ${BANDS[p.s.q][S.tgt[p.s.id]]}</span></td>
+      <td class="hl" data-label="Kitap"><b>${p.b.title}</b><br>${p.b.pub} · ${p.b.lvl}</td><td class="why" data-label="Neden bu kitap?">${p.why}</td></tr>`).join("") +
+    `</tbody></table></div></div>`;
+}
+$("btnSet").onclick=()=>{
+  const who = S.ad ? esc(S.ad)+" için " : "";
+  const lise = S.lise ? "Hedef lise: "+esc(S.lise) : "Hedef lise belirtilmedi";
+  const setA = buildSet("up"); const avoid = {}; setA.forEach(p=>{avoid[p.s.id]=p.b;});
+  const out = `<h2>${who}ders ders kaynak setleri</h2>
+    <p class="sub">${lise} · %${S.slice}'lik dilim. Her ders için tek kitaptan oluşan iki set hazırladık; yayınevi çeşitliliği de gözetildi.</p>` +
+    setBox("1. Set · Bir üst seviyeye çıkış", "Şimdiki seviyenden bir tık yukarı çıkman için: her dersten, şimdiki net aralığının bir üstündeki zorluktan kitap.", setA) +
+    setBox("2. Set · Nihai hedefe ulaşma", "Hedef net aralığına ulaşman için: her dersten, hedef netinin gerektirdiği zorluk düzeyinden kitap.", buildSet("goal", avoid)) +
+    `<div class="actions"><button class="btn" onclick="window.print()">Yazdır</button></div>`;
+  $("results").innerHTML = out;
+  $("results").scrollIntoView({behavior:"smooth"});
+};
+
+/* ---------- BAŞLAT ---------- */
+/* yazdırmada çıktıyı en fazla iki A4 sayfasına sığdır */
+window.addEventListener("beforeprint",()=>{
+  const r=$("results"); r.style.zoom="";
+  document.body.classList.add("pfit");
+  const avail=1900, h=r.offsetHeight;
+  if(h>avail) r.style.zoom=(avail/h).toFixed(3);
+});
+window.addEventListener("afterprint",()=>{
+  document.body.classList.remove("pfit"); $("results").style.zoom="";
+});
+
+const dlg=$("aboutDlg");
+$("aboutBtn").onclick=()=>dlg.showModal();
+$("aboutClose").onclick=()=>dlg.close();
+dlg.addEventListener("click",e=>{ if(e.target===dlg) dlg.close(); });
+
+renderSubjects();
+goTo(1);
+</script>
+</body>
+</html>
