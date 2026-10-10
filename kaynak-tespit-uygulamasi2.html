@@ -248,10 +248,10 @@ input[type=text]{font-size:16px; min-height:48px}
     <section class="panel" id="p1" aria-labelledby="t1">
       <h2 id="t1">Öğrenci bilgileri</h2>
       <label class="field" for="adsoyad">Ad soyad (isteğe bağlı)
-        <input type="text" id="adsoyad" autocomplete="name">
+        <input type="text" id="adsoyad" autocomplete="name" placeholder="Örn. Elif Yılmaz">
       </label>
       <label class="field" for="lise">Hedeflediğin lise (isteğe bağlı)
-        <input type="text" id="lise">
+        <input type="text" id="lise" placeholder="Örn. Ankara Fen Lisesi">
       </label>
       <p class="hint">Bu iki alan zorunlu değil. Boş bırakıp “Devam et” ile geçebilirsin.</p>
       <div class="err" id="e1" role="alert"></div>
@@ -676,6 +676,18 @@ const dlg=$("aboutDlg");
 $("aboutBtn").onclick=()=>dlg.showModal();
 $("aboutClose").onclick=()=>dlg.close();
 dlg.addEventListener("click",e=>{ if(e.target===dlg) dlg.close(); });
+
+/* Yedek sayma: count.js bir filtre tarafından engellenirse tracking pixel ile say */
+window.addEventListener("load",()=>{
+  setTimeout(()=>{
+    if(window.goatcounter) return;   // script çalıştıysa yedek gerekmez
+    try{
+      const img=new Image();
+      img.src="https://kaynak.goatcounter.com/count?p="+encodeURIComponent(location.pathname||"/")+
+              "&t="+encodeURIComponent(document.title)+"&rnd="+Math.random().toString(36).slice(2);
+    }catch(e){}
+  },2000);
+});
 
 /* Toplam ziyaret sayısı (GoatCounter); alınamazsa alan gizli kalır */
 fetch("https://kaynak.goatcounter.com/counter/TOTAL.json")
