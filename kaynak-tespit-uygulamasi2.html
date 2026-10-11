@@ -174,8 +174,7 @@ header h1{text-align:center}
 .btn.orange{background:#f58a1f; color:#14213d; border-color:#14213d}
 .actions{justify-content:center}
 #adsoyad,#lise{text-transform:uppercase}
-.btn.blue{background:#1d5fd1; color:#fff; border-color:#1d5fd1}
-.btn.blue:hover{box-shadow:3px 3px 0 #0f3a85}
+.btn.blue{background:#1d5fd1; color:#fff}
 
 /* Butonlarda beyaz yazı (okunurluk için hafif gölge) */
 #btnList, #btnSet, #btnMoral{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.45)}
@@ -187,6 +186,23 @@ header h1{text-align:center}
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hl-pen{background:linear-gradient(104deg, rgba(255,226,89,0) 0.5%, rgba(255,226,89,.26) 2.5%, rgba(255,226,89,.18) 96%, rgba(255,226,89,0) 99%)}}
 :root[data-theme="dark"] .hl-pen{background:linear-gradient(104deg, rgba(255,226,89,0) 0.5%, rgba(255,226,89,.26) 2.5%, rgba(255,226,89,.18) 96%, rgba(255,226,89,0) 99%)}
+
+/* "Bende var" butonu */
+.own{font:inherit; font-size:.85rem; font-weight:700; margin-top:8px; padding:4px 14px; min-height:40px; border:2px solid var(--ink); border-radius:999px; background:var(--chip); color:var(--ink); cursor:pointer}
+.own:hover{background:var(--accent); color:var(--accent-ink)}
+.own:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.warn{display:inline-block; margin-top:6px; color:var(--margin); font-weight:600; font-size:.9rem}
+@media print{.own{display:none !important}}
+body.pfit .own{display:none}
+
+.own-col{white-space:nowrap; text-align:center; vertical-align:middle}
+.own-col .own{margin-top:0}
+@media print{.own-col{display:none !important}}
+body.pfit .own-col{display:none}
+
+.navy{color:#14307a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .navy{color:#8fb4ff}}
+:root[data-theme="dark"] .navy{color:#8fb4ff}
 
 /* Hakkında */
 .about{font:inherit; font-weight:700; color:var(--ink); background:var(--accent); color:var(--accent-ink); border:2px solid var(--ink); border-radius:999px; padding:4px 14px; margin-left:4px; cursor:pointer; min-height:36px; white-space:nowrap}
@@ -560,8 +576,8 @@ $("back").onclick=()=>goTo(S.step-1);
 function renderSummary(){
   const sl = SLICES.find(s=>s.v===S.slice);
   $("summary").innerHTML =
-    `<p>${S.ad ? "Öğrenci: <b>"+esc(S.ad)+"</b>" : "<b>Öğrenci adı-soyadı belirtilmedi</b>"}</p>
-     <p>${S.lise ? "Hedef lise: <b>"+esc(S.lise)+"</b>" : "<b>Hedef lise belirtilmedi</b>"}</p>
+    `<p>${S.ad ? "Öğrenci: <b class=\"navy\">"+esc(S.ad)+"</b>" : "<b class=\"navy\">Öğrenci adı-soyadı belirtilmedi</b>"}</p>
+     <p>${S.lise ? "Hedef lise: <b class=\"navy\">"+esc(S.lise)+"</b>" : "<b class=\"navy\">Hedef lise belirtilmedi</b>"}</p>
      <p>Hedef: <b>%${S.slice}'lik dilim</b></p>` +
     SUBJECTS.map(s=>`<p>${s.name}: ${BANDS[s.q][S.cur[s.id]]} → <b>${BANDS[s.q][S.tgt[s.id]]}</b></p>`).join("") +
     totalLines();
@@ -626,55 +642,107 @@ $("btnList").onclick=()=>{
   $("results").scrollIntoView({behavior:"smooth"});
 };
 
-/* ---------- SET OLUŞTUR (iki set) ---------- */
-function buildSet(kind, avoid){
+/* ---------- SET OLUŞTUR (iki set; "Bende var" ile alternatif kitap) ---------- */
+const SETDEF = {
+  up:  {title:"1. Set · Bir üst seviyeye çıkış",  desc:"Şimdiki seviyenden bir tık yukarı çıkman için: her dersten, şimdiki net aralığının bir üstündeki zorluktan kitap."},
+  goal:{title:"2. Set · Nihai hedefe ulaşma",     desc:"Hedef net aralığına ulaşman için: her dersten, hedef netinin gerektirdiği zorluk düzeyinden kitap."}
+};
+let SETS = null;   // {up:{dersId:{b,alt}}, goal:{...}}
+let OWNED = {};    // dersId -> Set(kitap anahtarı)  (kullanıcıda olan kitaplar)
+let WARN = {};     // "set|dersId" -> true (alternatif kalmadı uyarısı)
+const bkey = b => b.pub+"|"+b.title;
+
+function pickFor(kind, s, exclude, otherB){
+  const {w,list} = matches(s);
+  const raw = kind==="up" ? w.cr[1]+0.5 : w.hi;
+  const desired = (kind==="up" && raw>w.hi) ? w.lo : Math.max(w.lo, Math.min(w.hi, raw));
   const used = {};
-  return SUBJECTS.map(s=>{
-    const {w,list} = matches(s);
-    const raw = kind==="up" ? w.cr[1]+0.5 : w.hi;
-    const desired = (kind==="up" && raw>w.hi) ? w.lo : Math.max(w.lo, Math.min(w.hi, raw));
-    list.sort((a,b)=>{
-      const sa = Math.abs(a.d-desired)+0.05*(used[a.pub]||0);
-      const sb = Math.abs(b.d-desired)+0.05*(used[b.pub]||0);
-      return sa-sb || a.d-b.d;
-    });
-    let pool = list;
-    if(avoid && avoid[s.id] && list.length>1) pool = list.filter(x=>!(x.title===avoid[s.id].title && x.pub===avoid[s.id].pub));
-    const b = pool[0];
-    used[b.pub]=(used[b.pub]||0)+1;
-    let why;
-    if(kind==="up"){
-      if(raw>w.hi) why = w.cr[1]>=4
-        ? "Zaten en üst zorluk seviyesine yakınsın; önce bu kitapla seviyeni pekiştirip 2. sette hedef kitaba geçersin."
-        : "Bir üst seviye kitap listede yok; önce seviyeni pekiştirmen için aralığın başındaki zorluktan seçildi.";
-      else why = "Şimdiki seviyenin bir üstünde; bir kademe yukarı çıkman için seçildi.";
-    } else {
-      why = b.d>w.cr[1]
-        ? "Hedef netinin gerektirdiği zorluk düzeyinde; nihai hedefe hazırlanman için seçildi."
-        : "Hedef net aralığın şimdiki seviyenle aynı düzeyde olduğundan bu seviyede pekiştirmen için seçildi.";
-    }
-    return {s,b,why};
+  SUBJECTS.forEach(o=>{
+    if(o.id!==s.id && SETS && SETS[kind][o.id]){ const p=SETS[kind][o.id].b.pub; used[p]=(used[p]||0)+1; }
   });
+  let pool = list.filter(x=>!exclude.has(bkey(x)));
+  if(pool.length && otherB){
+    const alt = pool.filter(x=>bkey(x)!==bkey(otherB));
+    if(alt.length) pool = alt;           // diğer setteki kitaptan farklı olanı tercih et
+  }
+  pool.sort((a,b)=>{
+    const sa = Math.abs(a.d-desired)+0.05*(used[a.pub]||0);
+    const sb = Math.abs(b.d-desired)+0.05*(used[b.pub]||0);
+    return sa-sb || a.d-b.d;
+  });
+  return pool[0] || null;
 }
-function setBox(title, desc, picks){
-  return `<div class="setbox"><h2>${title}</h2><p class="why">${desc}</p>
-    <div class="tablebox"><table><thead><tr><th>Ders</th><th>Kitap</th><th>Neden bu kitap?</th></tr></thead><tbody>` +
-    picks.map(p=>`<tr><td data-label="Ders"><b>${p.s.name}</b><br><span class="why">${BANDS[p.s.q][S.cur[p.s.id]]} → ${BANDS[p.s.q][S.tgt[p.s.id]]}</span></td>
-      <td class="hl" data-label="Kitap"><b>${p.b.title}</b><br>${p.b.pub} · ${p.b.lvl}</td><td class="why" data-label="Neden bu kitap?">${p.why}</td></tr>`).join("") +
-    `</tbody></table></div></div>`;
+function whyOf(kind, s, b, alt){
+  const {w} = matches(s);
+  let t;
+  if(kind==="up"){
+    if(w.cr[1]+0.5>w.hi) t = w.cr[1]>=4
+      ? "Zaten en üst zorluk seviyesine yakınsın; önce bu kitapla seviyeni pekiştirip 2. sette hedef kitaba geçersin."
+      : "Bir üst seviye kitap listede yok; önce seviyeni pekiştirmen için aralığın başındaki zorluktan seçildi.";
+    else t = isPrio(b,w)
+      ? "Şimdiki seviyenin bir üstünde; bir kademe yukarı çıkman için seçildi."
+      : "Bir üst seviyedeki diğer kitaplar elendiği için seviyene en yakın alternatif seçildi.";
+  } else {
+    t = b.d>w.cr[1]
+      ? "Hedef netinin gerektirdiği zorluk düzeyinde; nihai hedefe hazırlanman için seçildi."
+      : "Hedef net aralığın şimdiki seviyenle aynı düzeyde olduğundan bu seviyede pekiştirmen için seçildi.";
+  }
+  return alt ? t+" (Alternatif öneri)" : t;
 }
-$("btnSet").onclick=()=>{
+function setBox(kind){
+  const def = SETDEF[kind];
+  return `<div class="setbox"><h2>${def.title}</h2><p class="why">${def.desc}</p>
+    <div class="tablebox"><table><thead><tr><th>Ders</th><th>Kitap</th><th>Neden bu kitap?</th><th class="own-col">Elinde varsa</th></tr></thead><tbody>` +
+    SUBJECTS.map(s=>{
+      const p = SETS[kind][s.id], warn = WARN[kind+"|"+s.id];
+      return `<tr><td data-label="Ders"><b>${s.name}</b><br><span class="why">${BANDS[s.q][S.cur[s.id]]} → ${BANDS[s.q][S.tgt[s.id]]}</span></td>
+      <td class="hl" data-label="Kitap"><b>${p.b.title}</b><br>${p.b.pub} · ${p.b.lvl}</td>
+      <td class="why" data-label="Neden bu kitap?">${whyOf(kind,s,p.b,p.alt)}${warn?`<br><span class="warn">⚠ Bu ders için seviyene uygun başka kitap kalmadı; son listelenen kitap listede kalıyor.</span>`:""}</td>
+      <td class="own-col" data-label="Elinde varsa"><button type="button" class="own" data-kind="${kind}" data-s="${s.id}">Bende var</button></td></tr>`;
+    }).join("") + `</tbody></table></div></div>`;
+}
+function showSets(initial){
+  const y = window.scrollY;
   const who = S.ad ? esc(S.ad)+" için " : "";
   const lise = S.lise ? "Hedef lise: "+esc(S.lise) : "Hedef lise belirtilmedi";
-  const setA = buildSet("up"); const avoid = {}; setA.forEach(p=>{avoid[p.s.id]=p.b;});
-  const out = `<h2>${who}ders ders kaynak setleri</h2>
-    <p class="sub">${lise} · %${S.slice}'lik dilim. Her ders için tek kitaptan oluşan iki set hazırladık; yayınevi çeşitliliği de gözetildi.</p>` +
-    setBox("1. Set · Bir üst seviyeye çıkış", "Şimdiki seviyenden bir tık yukarı çıkman için: her dersten, şimdiki net aralığının bir üstündeki zorluktan kitap.", setA) +
-    setBox("2. Set · Nihai hedefe ulaşma", "Hedef net aralığına ulaşman için: her dersten, hedef netinin gerektirdiği zorluk düzeyinden kitap.", buildSet("goal", avoid)) +
+  $("results").innerHTML = `<h2>${who}ders ders kaynak setleri</h2>
+    <p class="sub">${lise} · %${S.slice}'lik dilim. Her ders için tek kitaptan oluşan iki set hazırladık. Elinde olan bir kitap varsa “Bende var” butonuna bas, o ders için seviyene uygun alternatif gösterelim.</p>` +
+    setBox("up") + setBox("goal") +
     `<div class="actions"><button class="btn" onclick="window.print()">Yazdır</button></div>`;
-  $("results").innerHTML = out;
-  $("results").scrollIntoView({behavior:"smooth"});
+  if(initial) $("results").scrollIntoView({behavior:"smooth"}); else window.scrollTo(0,y);
+}
+function ownClick(kind, id){
+  WARN = {};
+  const s = SUBJECTS.find(x=>x.id===id), cur = SETS[kind][id].b;
+  const ok = kind==="up" ? "goal" : "up";
+  const ex = new Set(OWNED[id]||[]); ex.add(bkey(cur));
+  const nb = pickFor(kind, s, ex, SETS[ok][id].b);
+  if(!nb){ WARN[kind+"|"+id]=true; showSets(false); return; }   // alternatif kalmadı: kitap listede kalır
+  OWNED[id] = ex;
+  SETS[kind][id] = {b:nb, alt:true};
+  if(bkey(SETS[ok][id].b)===bkey(cur)){                        // aynı kitap diğer sette de varsa onu da değiştir
+    const nb2 = pickFor(ok, s, ex, nb);
+    if(nb2) SETS[ok][id] = {b:nb2, alt:true};
+  }
+  showSets(false);
+}
+$("btnSet").onclick=()=>{
+  SETS = {up:{}, goal:{}}; WARN = {};
+  ["up","goal"].forEach(kind=>{
+    SUBJECTS.forEach(s=>{
+      const other = kind==="goal" ? SETS.up[s.id].b : null;
+      const ex = OWNED[s.id] || new Set();
+      let b = pickFor(kind, s, ex, other);
+      if(!b) b = pickFor(kind, s, new Set(), other);           // hepsi "bende var" ise yine de bir kitap göster
+      SETS[kind][s.id] = {b, alt:false};
+    });
+  });
+  showSets(true);
 };
+$("results").addEventListener("click",e=>{
+  const btn = e.target.closest(".own");
+  if(btn) ownClick(btn.dataset.kind, btn.dataset.s);
+});
 
 /* 1. adım alanları: yalnızca BÜYÜK HARF (Türkçe kurallarıyla: i→İ, ı→I) */
 ["adsoyad","lise"].forEach(id=>{
