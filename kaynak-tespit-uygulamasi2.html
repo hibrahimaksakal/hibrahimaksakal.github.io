@@ -134,7 +134,7 @@ tr:last-child td{border-bottom:0}
 @page{size:A4; margin:8mm}
 @media print{
   body{background:#fff !important; color:#000}
-  header,.steps,.sheet,.actions,.btn,.visits{display:none !important}
+  header,.steps,.sheet,.actions,.btn{display:none !important}
   .wrap{padding:0; max-width:none}
   .results{margin-top:0}
 }
@@ -164,12 +164,6 @@ header h1{text-align:center}
 .sub.intro .about{margin-left:0; flex:none}
 /* Hedef net seçili kutusu: koyu yeşil */
 .chip input[name^="tgt-"]:checked + span{background:#17704a; color:#fff; border-color:#17704a}
-
-/* Ziyaret sayacı */
-.visits{margin-top:44px; text-align:center; padding:14px; border:2px dashed var(--line); border-radius:6px; background:color-mix(in srgb, var(--sheet) 88%, transparent)}
-.visits .lbl{letter-spacing:.14em; font-size:.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase}
-.visits .num{font-family:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; font-size:2.4rem; font-weight:800; line-height:1.1; margin-top:2px}
-.visits .vnote{font-size:.88rem; color:var(--ink-soft); margin:0 auto; max-width:56ch}
 
 .btn.orange{background:#f58a1f; color:#14213d; border-color:#14213d}
 .actions{justify-content:center}
@@ -203,6 +197,10 @@ body.pfit .own-col{display:none}
 .navy{color:#14307a}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .navy{color:#8fb4ff}}
 :root[data-theme="dark"] .navy{color:#8fb4ff}
+
+.qmark{position:absolute; top:8px; right:8px; width:34px; height:34px; padding:0; border-radius:50%; border:2px solid var(--ink); background:var(--sheet); color:var(--ink); font:inherit; font-weight:800; font-size:1rem; line-height:1; cursor:pointer}
+.qmark:hover{background:var(--accent); color:var(--accent-ink)}
+.qmark:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 
 /* Hakkında */
 .about{font:inherit; font-weight:700; color:var(--ink); background:var(--accent); color:var(--accent-ink); border:2px solid var(--ink); border-radius:999px; padding:4px 14px; margin-left:4px; cursor:pointer; min-height:36px; white-space:nowrap}
@@ -333,15 +331,21 @@ input[type=text]{font-size:16px; min-height:48px}
       <h2 id="aboutTitle">Hakkında</h2>
       <p>Bu rehber, şimdiki ve hedef netlerine göre LGS 2026-2027 hazırlığında hangi soru bankalarına bakabileceğini göstermek için hazırlandı. Kaynaklar, yayınevi soru kaynağı gruplandırma listesindeki zorluk düzeylerine göre eşleştirilir.</p>
       <p>Listede toplam <b>15 farklı yayınevi</b> yer alıyor: Okyanus, Fenomen, Hız, Ankara, Mozaik, Günay, Nartest, Bilfen, Kafa DenGi, Sinan Kuzucu, Paraf, Newton, Kurmay ELT, YDS Publishing ve Team ELT.</p>
-      <p>Girdiğin ad, lise ve net seçimleri hiçbir yere gönderilmez ve kaydedilmez; sayfayı yenilediğinde ya da kapattığında kaybolur. Sayfa yalnızca <b>anonim toplam ziyaret sayısını</b> tutar. Bunun için çerez kullanmayan, gizlilik odaklı GoatCounter sayaç hizmeti kullanılır; seni tanımlayacak kişisel bilgi toplanmaz.</p>
-      <p class="dlg-note">Bu liste <b>yalnızca bilgilendirme amacı taşır</b>. Hiçbir yayınevi ile <b>herhangi bir işbirliği, sponsorluk veya reklam ilişkisi yoktur</b>. Öneriler tavsiye niteliğindedir; kitap seçerken kendi ihtiyacına ve öğretmeninin görüşüne de bak.</p>
+      <p>Sayfa yenilendiğinde ya da kapatıldığında girdiğin tüm bilgiler ve seçimler kaybolur; hiçbir veri kaydedilmez.</p>
+      <p class="dlg-note">Bu liste <b>yalnızca bilgilendirme amacı taşır</b>. Hiçbir yayınevi ile <b>herhangi bir işbirliği, sponsorluk veya reklam ilişkisi yoktur</b>. Öneriler tavsiye niteliğindedir; kitap seçerken kendi ihtiyacına ve uzman görüşüne de bak.</p>
       <button type="button" class="btn primary" id="aboutClose">Kapat</button>
     </div>
   </dialog>
 
-  <footer class="visits" id="visits">
-    <p class="vnote">Bu sayfada ziyaret sayısı, çerez kullanmayan GoatCounter ile anonim olarak sayılır. Adın, hedef lisen ve net seçimlerin gibi girdiğin bilgiler hiçbir yere gönderilmez ve kaydedilmez.</p>
-  </footer>
+  <dialog id="fitDlg" aria-labelledby="fitTitle">
+    <div class="dlg-in">
+      <h2 id="fitTitle">Dilim ve net uyumu hakkında</h2>
+      <p>Bu kutudaki “%3 için en az 78 net”, “%10 için en az 68 net”, “%15 için en az 60 net”, “%20 için en az 53 net” değerleri <b>yaklaşık tahminlerdir</b>. Hedefinin ne kadar gerçekçi olduğunu görmen için bir rehber olarak kullanılır.</p>
+      <p>Gerçek yüzdelik dilimler ve her dilime karşılık gelen net sayıları <b>ancak sınavdan sonra, o yıl sınava giren öğrencilerin sonuçlarına göre</b> belli olur. Sınavın zorluğuna ve katılımcıların başarısına göre bu değerler yıldan yıla değişebilir.</p>
+      <p class="dlg-note">Seçtiğin net aralıkları da tahmindir. Bu karşılaştırma bir garanti ya da kesin öngörü değil, planını yaparken yardımcı olacak bir göstergedir.</p>
+      <button type="button" class="btn primary" id="fitClose">Kapat</button>
+    </div>
+  </dialog>
 </div>
 
 <script>
@@ -464,7 +468,7 @@ const BOOKS = {
   ["KURMAY ELT","More & More Fame The Best English Test Book","ORTA"],
   ["YDS PUBLISHING","Shall We?! 8 Test Book","ORTA-ZOR"],
   ["TEAM ELT","Ahead with English 8 Test Book","ORTA"],
-  ["YDS PUBLISHING","English Up 8 Extreme Test Book","ORTA-ZOR"]
+  ["YDS PUBLISHING","English Up 8 Extreme Test Book","ZOR"]
  ]
 };
 
@@ -592,16 +596,17 @@ function totalLines(){
   return `<p style="margin-top:10px;padding-top:8px;border-top:2px dashed var(--line)">Mevcut toplam net aralığı: <b>${cl}-${ch} net</b></p>
           <p>Hedef toplam net aralığı: <b>${tl}-${th} net</b></p>` + fitCheck(tl, th);
 }
+const QBTN = `<button type="button" class="qmark" aria-label="Bu tahmin hakkında bilgi" title="Bilgi">?</button>`;
 function fitCheck(tl, th){
   const NEED = {3:78, 10:68, 15:60, 20:53};
   const req = NEED[S.slice];
   if(th < req){
-    return `<p style="margin-top:10px;padding:10px 12px;border:2px solid var(--margin);border-left-width:6px;border-radius:6px;color:var(--margin);font-weight:600">
-      Uyumsuzluk var: %${S.slice}'lık dilim için ortalama en az ${req} net gerekiyor, ancak hedef toplam net aralığının (${tl}-${th} net) en üst değeri bile bu sayıya ulaşmıyor. Ya hedef net aralıklarını yükseltmeli ya da hedef dilimini gözden geçirmelisin.</p>`;
+    return `<p style="position:relative;margin-top:10px;padding:10px 12px;padding-right:50px;border:2px solid var(--margin);border-left-width:6px;border-radius:6px;color:var(--margin);font-weight:600">
+      Uyumsuzluk var: %${S.slice}'lık dilim için ortalama en az ${req} net gerekiyor, ancak hedef toplam net aralığının (${tl}-${th} net) en üst değeri bile bu sayıya ulaşmıyor. Ya hedef net aralıklarını yükseltmeli ya da hedef dilimini gözden geçirmelisin.${QBTN}</p>`;
   }
   const low = tl < req ? ` Aralığın alt ucu (${tl}) bu sayının altında kaldığı için hedefini aralığın üst kısmına yaklaştırman gerekir.` : "";
-  return `<p style="margin-top:10px;padding:10px 12px;border:2px solid var(--ok);border-left-width:6px;border-radius:6px;font-weight:600">
-    Uyumlu: %${S.slice}'lık dilim için ortalama en az ${req} net gerekiyor; hedef toplam net aralığın (${tl}-${th} net) bu sayıya ulaşıyor.${low}</p>`;
+  return `<p style="position:relative;margin-top:10px;padding:10px 12px;padding-right:50px;border:2px solid var(--ok);border-left-width:6px;border-radius:6px;font-weight:600">
+    Uyumlu: %${S.slice}'lık dilim için ortalama en az ${req} net gerekiyor; hedef toplam net aralığın (${tl}-${th} net) bu sayıya ulaşıyor.${low}${QBTN}</p>`;
 }
 function esc(t){ return t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
@@ -809,25 +814,13 @@ const dlg=$("aboutDlg");
 $("aboutBtn").onclick=()=>dlg.showModal();
 $("aboutClose").onclick=()=>dlg.close();
 dlg.addEventListener("click",e=>{ if(e.target===dlg) dlg.close(); });
-
-/* Yedek sayma: count.js bir filtre tarafından engellenirse tracking pixel ile say */
-window.addEventListener("load",()=>{
-  setTimeout(()=>{
-    if(window.goatcounter) return;   // script çalıştıysa yedek gerekmez
-    try{
-      const img=new Image();
-      img.src="https://kaynak.goatcounter.com/count?p="+encodeURIComponent(location.pathname||"/")+
-              "&t="+encodeURIComponent(document.title)+"&rnd="+Math.random().toString(36).slice(2);
-    }catch(e){}
-  },2000);
-});
-
-
+const fitDlg=$("fitDlg");
+$("fitClose").onclick=()=>fitDlg.close();
+fitDlg.addEventListener("click",e=>{ if(e.target===fitDlg) fitDlg.close(); });
+document.addEventListener("click",e=>{ if(e.target.closest(".qmark")) fitDlg.showModal(); });
 
 renderSubjects();
 goTo(1);
 </script>
-<script data-goatcounter="https://kaynak.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
